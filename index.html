@@ -1,0 +1,839 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Missão Aura | Descubra seu perfil</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --fundo: #10121b;
+            --cartao: #191c29;
+            --borda: #303448;
+            --texto: #f4f2ff;
+            --suave: #a5a9bd;
+            --roxo: #b8a4ff;
+            --verde: #a9f0d1;
+            --vermelho: #ff7777;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(ellipse at top, #272442 0%, var(--fundo) 58%);
+            color: var(--texto);
+            font-family: "DM Sans", sans-serif;
+            min-height: 100vh;
+        }
+
+        .mono {
+            font-family: "Space Mono", monospace;
+        }
+
+        .app-shell {
+            width: min(100% - 32px, 850px);
+            margin: auto;
+        }
+
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 0;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .simbolo {
+            color: var(--roxo);
+            font-size: 28px;
+        }
+
+        .etiqueta {
+            color: var(--verde);
+            font-size: 12px;
+        }
+
+        .container {
+            padding: 45px 0 65px;
+        }
+
+        .introducao {
+            margin-bottom: 32px;
+        }
+
+        .subtitulo {
+            color: var(--verde);
+            font-size: 11px;
+            letter-spacing: 1.5px;
+        }
+
+        h1 {
+            margin: 15px 0;
+            font-size: clamp(32px, 7vw, 52px);
+            line-height: 1.1;
+        }
+
+        h1 span {
+            color: var(--roxo);
+        }
+
+        .descricao {
+            color: var(--suave);
+            line-height: 1.8;
+            max-width: 570px;
+        }
+
+        .cartao,
+        .resultado-cartao {
+            padding: 25px;
+            margin-bottom: 22px;
+            background: var(--cartao);
+            border: 1px solid var(--borda);
+            border-radius: 18px;
+        }
+
+        h2 {
+            margin: 0 0 22px;
+            font-size: 18px;
+        }
+
+        .campos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .campo label {
+            font-size: 13px;
+            color: var(--suave);
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            background: #111420;
+            color: var(--texto);
+            font: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--roxo);
+        }
+
+        input.invalido {
+            border-color: var(--vermelho);
+        }
+
+        .instrucao {
+            margin-top: -10px;
+            margin-bottom: 25px;
+            color: var(--suave);
+            font-size: 14px;
+        }
+
+        .pergunta {
+            min-width: 0;
+            margin: 0 0 25px;
+            padding: 0;
+            border: 0;
+        }
+
+        .pergunta:last-child {
+            margin-bottom: 0;
+        }
+
+        .pergunta legend {
+            width: 100%;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.7;
+        }
+
+        .numero {
+            display: inline-block;
+            margin-right: 8px;
+            color: var(--verde);
+            font-family: "Space Mono", monospace;
+        }
+
+        .opcao {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            padding: 13px;
+            margin: 8px 0;
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            color: #d8d9e7;
+            font-size: 14px;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .opcao:hover {
+            border-color: var(--roxo);
+            background: #222337;
+        }
+
+        .opcao:has(input:checked) {
+            border-color: var(--roxo);
+            background: #28233d;
+        }
+
+        .opcao input {
+            margin-top: 4px;
+            accent-color: var(--roxo);
+            flex-shrink: 0;
+        }
+
+        .botao-principal {
+            width: 100%;
+            padding: 17px;
+            border: 0;
+            border-radius: 11px;
+            background: var(--roxo);
+            color: #171321;
+            font-family: "Space Mono", monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .botao-principal:hover {
+            transform: translateY(-2px);
+            background: #d0c4ff;
+        }
+
+        .mensagem-erro {
+            color: var(--vermelho);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .resultado-cartao {
+            overflow: hidden;
+        }
+
+        .resultado-imagem {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .tripulante-container,
+        .mascote-container {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .imagem-legenda {
+            color: var(--verde);
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .tripulante-container img,
+        .mascote-container img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 12px;
+            border: 1px solid var(--borda);
+            background: #111420;
+        }
+
+        .numero-perfil {
+            grid-column: 1 / -1;
+            color: var(--roxo);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .categoria {
+            color: var(--verde);
+            font-family: "Space Mono", monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .nome-perfil {
+            margin: 10px 0;
+            font-size: clamp(25px, 5vw, 36px);
+        }
+
+        .descricao-perfil {
+            color: var(--suave);
+            line-height: 1.8;
+        }
+
+        .dados-tripulante {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .dado {
+            padding: 10px 13px;
+            border: 1px solid var(--borda);
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .dado strong {
+            color: var(--roxo);
+        }
+
+        .mensagem-resultado {
+            padding: 16px;
+            border-left: 3px solid var(--verde);
+            background: #202a2c;
+            border-radius: 5px;
+            line-height: 1.7;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 560px) {
+            .container {
+                padding-top: 30px;
+            }
+
+            .cartao,
+            .resultado-cartao {
+                padding: 18px;
+            }
+
+            .campos {
+                grid-template-columns: 1fr;
+            }
+
+            .resultado-imagem {
+                gap: 12px;
+            }
+
+            .tripulante-container img,
+            .mascote-container img {
+                height: 190px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <header class="cabecalho">
+            <div class="marca">
+                <span class="simbolo">✳</span>
+                <span class="mono">MISSÃO AURA</span>
+            </div>
+            <span class="etiqueta mono">ANO 2089</span>
+        </header>
+
+        <main class="container">
+
+            <!-- TELA DO TESTE -->
+            <section id="tela-teste">
+                <div class="introducao">
+                    <p class="subtitulo mono">
+                        PROTOCOLO DE RECRUTAMENTO // 01
+                    </p>
+
+                    <h1>Descubra seu <span>perfil.</span></h1>
+
+                    <p class="descricao">
+                        O ano é 2089. Um novo planeta aguarda a humanidade.
+                        Descubra qual é o seu papel nesta missão espacial.
+                    </p>
+                </div>
+
+                <form id="formulario">
+                    <section class="cartao">
+                        <h2>01. Identificação do tripulante</h2>
+
+                        <div class="campos">
+                            <div class="campo">
+                                <label for="nome">Nome completo</label>
+                                <input
+                                    type="text"
+                                    id="nome"
+                                    placeholder="Digite seu nome"
+                                    autocomplete="name"
+                                    required
+                                >
+                            </div>
+
+                            <div class="campo">
+                                <label for="nascimento">
+                                    Data de nascimento
+                                </label>
+                                <input
+                                    type="date"
+                                    id="nascimento"
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="cartao">
+                        <h2>02. Análise de personalidade</h2>
+                        <p class="instrucao">
+                            Escolha uma resposta para cada pergunta.
+                        </p>
+
+                        <fieldset class="pergunta">
+                            <legend>
+                                <span class="numero">01</span>
+                                Você encontra uma máquina desconhecida.
+                                O que faz?
+                            </legend>
+
+                            <label class="opcao">
+                                <input type="radio" name="p1" value="1" required>
+                                Tento consertá-la e entender suas peças.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p1" value="2">
+                                Investigo como ela funciona.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p1" value="3">
+                                Experimento suas funções.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p1" value="4">
+                                Planejo a melhor maneira de utilizá-la.
+                            </label>
+                        </fieldset>
+
+                        <fieldset class="pergunta">
+                            <legend>
+                                <span class="numero">02</span>
+                                Qual atividade mais combina com você?
+                            </legend>
+
+                            <label class="opcao">
+                                <input type="radio" name="p2" value="1" required>
+                                Construir e resolver problemas.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p2" value="2">
+                                Pesquisar e descobrir coisas novas.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p2" value="3">
+                                Explorar lugares desconhecidos.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p2" value="4">
+                                Organizar tarefas e liderar equipes.
+                            </label>
+                        </fieldset>
+
+                        <fieldset class="pergunta">
+                            <legend>
+                                <span class="numero">03</span>
+                                Durante a missão, surge um problema inesperado.
+                                O que você faz?
+                            </legend>
+
+                            <label class="opcao">
+                                <input type="radio" name="p3" value="1" required>
+                                Procuro uma solução prática.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p3" value="2">
+                                Analiso as evidências antes de agir.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p3" value="3">
+                                Exploro alternativas diferentes.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p3" value="4">
+                                Organizo a equipe e defino prioridades.
+                            </label>
+                        </fieldset>
+
+                        <fieldset class="pergunta">
+                            <legend>
+                                <span class="numero">04</span>
+                                Qual seria sua maior contribuição para a missão?
+                            </legend>
+
+                            <label class="opcao">
+                                <input type="radio" name="p4" value="1" required>
+                                Criar e reparar equipamentos.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p4" value="2">
+                                Produzir conhecimento científico.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p4" value="3">
+                                Explorar o território do planeta.
+                            </label>
+                            <label class="opcao">
+                                <input type="radio" name="p4" value="4">
+                                Coordenar decisões e estratégias.
+                            </label>
+                        </fieldset>
+                    </section>
+
+                    <p id="mensagem-erro" class="mensagem-erro"
+                       role="alert" aria-live="polite"></p>
+
+                    <button type="submit" class="botao-principal">
+                        DESCOBRIR MEU PERFIL ↗
+                    </button>
+                </form>
+            </section>
+
+            <!-- TELA DE RESULTADO -->
+            <section id="tela-resultado" hidden>
+                <div class="introducao">
+                    <p class="subtitulo mono">
+                        ANÁLISE CONCLUÍDA // 02
+                    </p>
+
+                    <h1>Relatório do <span>tripulante.</span></h1>
+
+                    <p class="descricao">
+                        Os dados foram analisados. Este é o seu perfil
+                        para a missão.
+                    </p>
+                </div>
+
+                <article class="resultado-cartao">
+                    <div class="resultado-imagem">
+                        <div class="tripulante-container">
+                            <span class="imagem-legenda mono">
+                                TRIPULANTE
+                            </span>
+                            <img
+                                id="imagem-perfil"
+                                src="img/perfil-1.jpg"
+                                alt="Imagem do tripulante"
+                            >
+                        </div>
+
+                        <div class="mascote-container">
+                            <span class="imagem-legenda mono">
+                                SEU MASCOTE
+                            </span>
+                            <img
+                                id="imagem-mascote"
+                                src="img/mascote-tartaruga.jpg"
+                                alt="Mascote do perfil"
+                            >
+                        </div>
+
+                        <span id="numero-perfil"
+                              class="numero-perfil mono">
+                            PERFIL 01
+                        </span>
+                    </div>
+
+                    <p id="categoria-perfil" class="categoria">
+                        CONSTRUÇÃO
+                    </p>
+
+                    <h2 id="nome-perfil" class="nome-perfil">
+                        Engenheiro de Sistemas
+                    </h2>
+
+                    <p id="descricao-perfil" class="descricao-perfil"></p>
+
+                    <div class="dados-tripulante">
+                        <div class="dado">
+                            Tripulante: <strong id="resultado-nome"></strong>
+                        </div>
+                        <div class="dado">
+                            Idade: <strong id="resultado-idade"></strong>
+                        </div>
+                    </div>
+
+                    <p id="mensagem-resultado" class="mensagem-resultado"></p>
+
+                    <button type="button" id="refazer"
+                            class="botao-principal">
+                        ↶ REFAZER O TESTE
+                    </button>
+                </article>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // ELEMENTOS DA PÁGINA
+        const formulario = document.getElementById("formulario");
+        const telaTeste = document.getElementById("tela-teste");
+        const telaResultado = document.getElementById("tela-resultado");
+
+        const campoNome = document.getElementById("nome");
+        const campoNascimento = document.getElementById("nascimento");
+        const mensagemErro = document.getElementById("mensagem-erro");
+
+        const imagemPerfil = document.getElementById("imagem-perfil");
+        const imagemMascote = document.getElementById("imagem-mascote");
+
+        const numeroPerfil = document.getElementById("numero-perfil");
+        const nomePerfil = document.getElementById("nome-perfil");
+        const categoriaPerfil = document.getElementById("categoria-perfil");
+        const descricaoPerfil = document.getElementById("descricao-perfil");
+
+        const resultadoNome = document.getElementById("resultado-nome");
+        const resultadoIdade = document.getElementById("resultado-idade");
+        const mensagemResultado = document.getElementById("mensagem-resultado");
+        const botaoRefazer = document.getElementById("refazer");
+
+        // DATA MÁXIMA: HOJE
+        function atualizarLimiteData() {
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+            const dia = String(hoje.getDate()).padStart(2, "0");
+
+            campoNascimento.max = `${ano}-${mes}-${dia}`;
+        }
+
+        atualizarLimiteData();
+
+        // CALCULA A IDADE
+        function calcularIdade(dataTexto) {
+            const nascimento = new Date(dataTexto + "T00:00:00");
+            const hoje = new Date();
+
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+
+            const aindaNaoFezAniversario =
+                hoje.getMonth() < nascimento.getMonth() ||
+                (
+                    hoje.getMonth() === nascimento.getMonth() &&
+                    hoje.getDate() < nascimento.getDate()
+                );
+
+            if (aindaNaoFezAniversario) {
+                idade--;
+            }
+
+            return idade;
+        }
+
+        // INFORMAÇÕES DOS PERFIS
+        const perfis = {
+            1: {
+                nome: "Engenheiro de Sistemas",
+                categoria: "Construção",
+                imagem: "img/perfil-1.jpg",
+                mascote: "img/mascote-tartaruga.jpg",
+                descricao:
+                    "Você é prático, criativo e gosta de resolver problemas. " +
+                    "Sua habilidade de construir soluções será essencial " +
+                    "para manter a missão funcionando.",
+                mensagem:
+                    "Sua missão é transformar ideias em soluções. " +
+                    "Com sua dedicação, a equipe poderá superar desafios " +
+                    "e construir um futuro melhor."
+            },
+
+            2: {
+                nome: "Cientista Explorador",
+                categoria: "Investigação",
+                imagem: "img/perfil-2.jpg",
+                mascote: "img/mascote-pinguim.jpg",
+                descricao:
+                    "Você é curioso, observador e gosta de descobrir " +
+                    "como as coisas funcionam. Sua capacidade de investigar " +
+                    "pode revelar os maiores segredos do planeta.",
+                mensagem:
+                    "Sua missão é buscar respostas e ampliar o conhecimento. " +
+                    "Cada descoberta pode mudar o destino da humanidade."
+            },
+
+            3: {
+                nome: "Explorador de Campo",
+                categoria: "Exploração",
+                imagem: "img/perfil-3.jpg",
+                mascote: "img/mascote-raposa.jpg",
+                descricao:
+                    "Você é aventureiro, adaptável e não tem medo de " +
+                    "experimentar caminhos diferentes. Seu olhar atento " +
+                    "ajudará a equipe a conhecer o novo planeta.",
+                mensagem:
+                    "Sua missão é desbravar o desconhecido. " +
+                    "Sua coragem e criatividade podem abrir caminhos " +
+                    "que ninguém imaginou."
+            },
+
+            4: {
+                nome: "Estrategista da Missão",
+                categoria: "Planejamento",
+                imagem: "img/perfil-4.jpg",
+                mascote: "img/mascote-axolote.jpg",
+                descricao:
+                    "Você é organizado, pensa antes de agir e sabe " +
+                    "considerar diferentes possibilidades. Seu planejamento " +
+                    "ajudará a equipe a tomar decisões importantes.",
+                mensagem:
+                    "Sua missão é ajudar a equipe a seguir na direção certa. " +
+                    "Com estratégia e cooperação, grandes desafios podem " +
+                    "ser vencidos."
+            }
+        };
+
+        // ENVIA E CALCULA O TESTE
+        formulario.addEventListener("submit", function(evento) {
+            evento.preventDefault();
+
+            mensagemErro.textContent = "";
+
+            campoNome.classList.remove("invalido");
+            campoNascimento.classList.remove("invalido");
+
+            const nome = campoNome.value.trim();
+            const data = campoNascimento.value;
+
+            if (!nome) {
+                mensagemErro.textContent = "Digite seu nome para continuar.";
+                campoNome.classList.add("invalido");
+                campoNome.focus();
+                return;
+            }
+
+            if (!data) {
+                mensagemErro.textContent =
+                    "Informe sua data de nascimento para continuar.";
+                campoNascimento.classList.add("invalido");
+                campoNascimento.focus();
+                return;
+            }
+
+            const nascimento = new Date(data + "T00:00:00");
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+
+            if (Number.isNaN(nascimento.getTime()) || nascimento > hoje) {
+                mensagemErro.textContent =
+                    "Informe uma data de nascimento válida.";
+                campoNascimento.classList.add("invalido");
+                campoNascimento.focus();
+                return;
+            }
+
+            // CADA RESPOSTA ADICIONA UM PONTO AO PERFIL ESCOLHIDO
+            const pontuacao = [0, 0, 0, 0];
+
+            for (let i = 1; i <= 4; i++) {
+                const resposta = formulario.querySelector(
+                    `input[name="p${i}"]:checked`
+                );
+
+                if (!resposta) {
+                    mensagemErro.textContent =
+                        "Responda às quatro perguntas antes de continuar.";
+                    return;
+                }
+
+                pontuacao[Number(resposta.value) - 1]++;
+            }
+
+            // DESCOBRE QUAL PERFIL TEVE MAIS PONTOS
+            const maiorPontuacao = Math.max(...pontuacao);
+            const indiceVencedor = pontuacao.indexOf(maiorPontuacao);
+            const perfilEscolhido = indiceVencedor + 1;
+            const perfil = perfis[perfilEscolhido];
+
+            // PREENCHE O RESULTADO
+            numeroPerfil.textContent =
+                "PERFIL " + String(perfilEscolhido).padStart(2, "0");
+
+            nomePerfil.textContent = perfil.nome;
+            categoriaPerfil.textContent = perfil.categoria;
+            descricaoPerfil.textContent = perfil.descricao;
+
+            imagemPerfil.src = perfil.imagem;
+            imagemPerfil.alt = perfil.nome;
+
+            imagemMascote.src = perfil.mascote;
+            imagemMascote.alt = "Mascote do perfil " + perfil.nome;
+
+            resultadoNome.textContent = nome;
+            resultadoIdade.textContent = calcularIdade(data) + " anos";
+            mensagemResultado.textContent = perfil.mensagem;
+
+            // MOSTRA O RESULTADO E ESCONDE O TESTE
+            telaTeste.hidden = true;
+            telaResultado.hidden = false;
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+
+        // REFAZ O TESTE SEM RECARREGAR A PÁGINA
+        botaoRefazer.addEventListener("click", function() {
+            formulario.reset();
+
+            mensagemErro.textContent = "";
+            mensagemResultado.textContent = "";
+
+            campoNome.classList.remove("invalido");
+            campoNascimento.classList.remove("invalido");
+
+            telaResultado.hidden = true;
+            telaTeste.hidden = false;
+
+            atualizarLimiteData();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+    </script>
+</body>
+</html>
